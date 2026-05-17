@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#667eea" id="theme-meta">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="EconNews">
+<meta name="description" content="India and global economics news — curated, filtered, offline-ready">
+<title>EconNews — India &amp; Global</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{
+  --p:#667eea;--pd:#5568d3;--ps:#764ba2;
+  --ok:#28a745;--warn:#ffc107;--err:#dc3545;
+  --bg:#f4f5f9;--card:#fff;--bdr:#e2e6ea;
+  --t1:#1a1d23;--t2:#555e6d;--t3:#8a94a6;
+  --st:env(safe-area-inset-top,0px);
+  --sb:env(safe-area-inset-bottom,0px);
+  --nav:58px;
+}
+[data-theme=dark]{
+  --bg:#0f1117;--card:#1c1f2b;--bdr:#2a2d3a;
+  --t1:#e8ecf4;--t2:#9aa3b8;--t3:#5a637a;--p:#7b93f7;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+  background:var(--bg);color:var(--t1);overscroll-behavior:contain;
+  padding-bottom:calc(var(--nav) + var(--sb) + 8px)}
+
+/* HEADER */
+.hdr{background:linear-gradient(135deg,var(--p),var(--ps));color:#fff;
+  padding:calc(var(--st) + 14px) 16px 14px;
+  position:sticky;top:0;z-index:120;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.hdr h1{font-size:1.3em;font-weight:700;letter-spacing:-.3px}
+.hdr-btns{display:flex;gap:8px}
+.ibtn{background:rgba(255,255,255,.18);border:none;color:#fff;
+  width:34px;height:34px;border-radius:50%;font-size:.95em;
+  display:flex;align-items:center;justify-content:center}
+.ibtn:active{background:rgba(255,255,255,.3);transform:scale(.9)}
+.search-box{display:flex;align-items:center;background:rgba(255,255,255,.2);
+  border-radius:11px;padding:0 12px;gap:8px;height:36px}
+.search-box input{background:transparent;border:none;outline:none;color:#fff;
+  font-size:.93em;flex:1;min-width:0}
+.search-box input::placeholder{color:rgba(255,255,255,.6)}
+.s-clear{background:none;border:none;color:rgba(255,255,255,.75);display:none}
+
+/* BARS */
+.off-bar{background:var(--err);color:#fff;text-align:center;
+  padding:7px;font-size:.82em;font-weight:600;display:none}
+.off-bar.show{display:block}
+.inst-bar{background:var(--ok);color:#fff;display:none;
+  align-items:center;gap:10px;padding:9px 16px}
+.inst-bar.show{display:flex}
+.inst-bar button{margin-left:auto;background:#fff;color:var(--ok);
+  border:none;border-radius:8px;padding:6px 14px;font-weight:700;font-size:.87em}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--bdr);margin:13px 13px 0;border-radius:13px;overflow:hidden}
+.stat{background:var(--card);padding:13px 4px;text-align:center}
+.sv{font-size:1.85em;font-weight:800;color:var(--p);line-height:1;margin-bottom:2px}
+.sl{font-size:.63em;color:var(--t3);text-transform:uppercase;letter-spacing:.5px}
+
+/* FILTER STRIP */
+.fwrap{background:var(--card);padding:9px 0;margin:13px 0 0;
+  box-shadow:0 1px 4px rgba(0,0,0,.07);
+  position:sticky;top:calc(var(--st) + 106px);z-index:110}
+.filters{display:flex;gap:8px;padding:0 13px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.filters::-webkit-scrollbar{display:none}
+.fb{flex-shrink:0;padding:7px 14px;background:var(--bg);
+  border:1.5px solid var(--bdr);border-radius:20px;
+  font-size:.87em;font-weight:600;color:var(--t2);white-space:nowrap}
+.fb.active{background:var(--p);color:#fff;border-color:var(--p)}
+.fb:active{transform:scale(.93)}
+
+/* CARDS */
+.list{padding:11px 13px 0}
+.card{background:var(--card);border-radius:13px;padding:15px;
+  margin-bottom:11px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.card:active{transform:scale(.975)}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
+.badge{padding:3px 8px;border-radius:9px;font-size:.67em;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.bi{background:#ffe0e0;color:#b02020}
+.bg2{background:#d3f9d8;color:#1f6e34}
+.bc{background:#e7f5ff;color:#1560a0}
+.bh{background:#fff3bf;color:#9a6800}
+.ctitle{font-size:1em;font-weight:700;line-height:1.4;margin-bottom:7px}
+.csum{font-size:.87em;color:var(--t2);line-height:1.55;margin-bottom:11px}
+.cmeta{display:flex;align-items:center;gap:9px;font-size:.76em;
+  color:var(--t3);padding-top:9px;border-top:1px solid var(--bdr);flex-wrap:wrap}
+.ipill{background:#fff3bf;color:#9a6800;padding:2px 7px;border-radius:9px;font-weight:700}
+.cbtns{display:flex;gap:7px;margin-top:9px}
+.cbtn{flex:1;padding:8px;border:1.5px solid var(--bdr);background:var(--bg);
+  border-radius:9px;font-size:.81em;font-weight:600;color:var(--t2);
+  display:flex;align-items:center;justify-content:center;gap:4px}
+.cbtn.saved{border-color:var(--p);color:var(--p)}
+.cbtn:active{opacity:.7}
+
+/* BOTTOM NAV */
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);
+  padding:8px 0 calc(var(--sb) + 8px);
+  box-shadow:0 -2px 10px rgba(0,0,0,.09);
+  display:grid;grid-template-columns:repeat(4,1fr);z-index:130}
+.nb{display:flex;flex-direction:column;align-items:center;gap:3px;
+  font-size:.67em;font-weight:600;color:var(--t3);padding:3px 0;border:none;background:none}
+.nb.active{color:var(--p)}
+.ni{font-size:1.45em;line-height:1}
+
+/* PULL-TO-REFRESH */
+.ptr{position:fixed;top:calc(var(--st) + 118px);left:50%;
+  transform:translateX(-50%) translateY(-90px);
+  background:var(--card);padding:8px 18px;border-radius:20px;
+  box-shadow:0 3px 12px rgba(0,0,0,.14);font-size:.87em;font-weight:600;
+  color:var(--t2);transition:transform .25s;z-index:200;white-space:nowrap}
+.ptr.show{transform:translateX(-50%) translateY(8px)}
+
+/* SPINNER / EMPTY */
+.spin-wrap{text-align:center;padding:50px 20px;color:var(--t3)}
+.spinner{border:3px solid var(--bdr);border-top:3px solid var(--p);
+  border-radius:50%;width:36px;height:36px;animation:spin 1s linear infinite;margin:0 auto 13px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:60px 25px;color:var(--t3)}
+.eicon{font-size:3.5em;opacity:.22;margin-bottom:13px}
+
+/* SHEET */
+.bdrop{position:fixed;inset:0;background:rgba(0,0,0,.42);
+  display:none;z-index:300;backdrop-filter:blur(2px)}
+.bdrop.show{display:block}
+.sheet{position:fixed;bottom:0;left:0;right:0;background:var(--card);
+  border-radius:22px 22px 0 0;
+  padding:0 0 calc(var(--sb) + 14px);
+  transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+  z-index:310;max-height:90vh;overflow-y:auto}
+.sheet.show{transform:translateY(0)}
+.shdl{width:38px;height:4px;background:var(--bdr);border-radius:2px;margin:11px auto 0}
+.shtitle{font-size:1.08em;font-weight:700;padding:14px 18px 11px;border-bottom:1px solid var(--bdr)}
+.shrow{display:flex;align-items:center;gap:13px;
+  padding:14px 18px;border-bottom:1px solid var(--bdr);font-size:.96em}
+.shrow:last-child{border-bottom:none}
+.shrow:active{background:var(--bg)}
+.shico{width:34px;height:34px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;font-size:1.15em;flex-shrink:0}
+.shlbl{flex:1}
+
+/* TOGGLE */
+.tog{width:42px;height:23px;border-radius:12px;background:var(--bdr);
+  position:relative;transition:background .2s;flex-shrink:0}
+.tog.on{background:var(--p)}
+.tog::after{content:'';position:absolute;top:2px;left:2px;width:19px;height:19px;
+  border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.tog.on::after{transform:translateX(19px)}
+
+/* TOAST */
+.toast{position:fixed;bottom:calc(var(--nav) + var(--sb) + 13px);
+  left:50%;transform:translateX(-50%) translateY(70px);
+  background:#2a2d3a;color:#fff;padding:9px 20px;border-radius:22px;
+  font-size:.88em;font-weight:500;z-index:400;transition:transform .28s;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+.tabs{display:none}.tabs.active{display:block}
+.lu{text-align:center;font-size:.73em;color:var(--t3);margin:9px 0 3px}
+</style>
+</head>
+<body>
+
+<div class="off-bar" id="offBar">⚠️ Offline — showing cached news</div>
+<div class="inst-bar" id="instBar">
+  <span>📲</span><span>Install for offline access</span>
+  <button id="instBtn">Install</button>
+</div>
+
+<div class="hdr">
+  <div class="hdr-top">
+    <h1>📊 EconNews</h1>
+    <div class="hdr-btns">
+      <button class="ibtn" id="darkBtn">🌙</button>
+      <button class="ibtn" id="settBtn">⚙️</button>
+    </div>
+  </div>
+  <div class="search-box">
+    <span>🔍</span>
+    <input type="search" id="sInput" placeholder="Search economics news…" autocomplete="off">
+    <button class="s-clear" id="sClear">✕</button>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="sv" id="sTotal">0</div><div class="sl">Total</div></div>
+  <div class="stat"><div class="sv" id="sIndia">0</div><div class="sl">India</div></div>
+  <div class="stat"><div class="sv" id="sGlobal">0</div><div class="sl">Global</div></div>
+  <div class="stat"><div class="sv" id="sHigh">0</div><div class="sl">High⭐</div></div>
+</div>
+
+<div class="fwrap">
+  <div class="filters" id="filters">
+    <button class="fb active" data-f="all">All</button>
+    <button class="fb" data-f="india">🇮🇳 India</button>
+    <button class="fb" data-f="global">🌍 Global</button>
+    <button class="fb" data-f="high">⭐ High</button>
+    <button class="fb" data-f="gdp">GDP</button>
+    <button class="fb" data-f="inflation">Inflation</button>
+    <button class="fb" data-f="trade">Trade</button>
+    <button class="fb" data-f="markets">Markets</button>
+    <button class="fb" data-f="policy">Policy</button>
+  </div>
+</div>
+
+<div class="ptr" id="ptr">🔄 Release to refresh</div>
+
+<div id="tabNews" class="tabs active">
+  <div class="lu" id="lu"></div>
+  <div class="list" id="newsList">
+    <div class="spin-wrap"><div class="spinner"></div>Loading news…</div>
+  </div>
+</div>
+
+<div id="tabSaved" class="tabs">
+  <div class="list" id="savedList">
+    <div class="empty"><div class="eicon">🔖</div>
+      <div>No saved articles yet<br><small>Tap 🔖 on any article</small></div></div>
+  </div>
+</div>
+
+<nav class="nav">
+  <button class="nb active" id="navNews"><span class="ni">📰</span>News</button>
+  <button class="nb" id="navSaved"><span class="ni">🔖</span>Saved</button>
+  <button class="nb" id="navRefresh"><span class="ni">🔄</span>Refresh</button>
+  <button class="nb" id="navShare"><span class="ni">📤</span>Share</button>
+</nav>
+
+<div class="toast" id="toast"></div>
+<div class="bdrop" id="bdrop"></div>
+
+<!-- Share sheet -->
+<div class="sheet" id="shareSheet">
+  <div class="shdl"></div>
+  <div class="shtitle">Share</div>
+  <div class="shrow" id="sNative"><div class="shico" style="background:#e7f5ff">📱</div><span class="shlbl">Share via…</span></div>
+  <div class="shrow" id="sWA"><div class="shico" style="background:#d3f9d8">💬</div><span class="shlbl">WhatsApp</span></div>
+  <div class="shrow" id="sEmail"><div class="shico" style="background:#fff3bf">📧</div><span class="shlbl">Email</span></div>
+  <div class="shrow" id="sCopy"><div class="shico" style="background:#f3e8ff">🔗</div><span class="shlbl">Copy link</span></div>
+  <div class="shrow" id="sClose"><div class="shico" style="background:#ffe0e0">✕</div><span class="shlbl">Cancel</span></div>
+</div>
+
+<!-- Settings sheet -->
+<div class="sheet" id="settSheet">
+  <div class="shdl"></div>
+  <div class="shtitle">Settings</div>
+  <div class="shrow"><div class="shico" style="background:#1a1d23">🌙</div><span class="shlbl">Dark mode</span><div class="tog" id="tDark"></div></div>
+  <div class="shrow"><div class="shico" style="background:#e7f5ff">🔔</div><span class="shlbl">Notifications</span><div class="tog" id="tNotif"></div></div>
+  <div class="shrow"><div class="shico" style="background:#d3f9d8">🇮🇳</div><span class="shlbl">India only</span><div class="tog" id="tIndia"></div></div>
+  <div class="shrow"><div class="shico" style="background:#fff3bf">⭐</div><span class="shlbl">High impact only (8+)</span><div class="tog" id="tHigh"></div></div>
+  <div class="shrow" id="clearCache"><div class="shico" style="background:#ffe0e0">🗑️</div><span class="shlbl">Clear cache &amp; reload</span></div>
+  <div class="shrow" style="justify-content:center;color:var(--t3);font-size:.78em">EconNews v2.0 · PWA · May 2026</div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+let allNews=[], bookmarks=[], prefs={dark:false,notif:false,indiaOnly:false,highOnly:false};
+let curFilter='all', curSearch='', curTab='news';
+let deferredPrompt=null, touchY0=0, pulling=false, toastTm;
+
+try { bookmarks=JSON.parse(localStorage.getItem('ecn_bm')||'[]'); } catch(e){}
+try { prefs={...prefs,...JSON.parse(localStorage.getItem('ecn_pr')||'{}')}; } catch(e){}
+
+// ── PWA ────────────────────────────────────────────────────────────────────
+if('serviceWorker' in navigator)
+  navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault(); deferredPrompt=e;
+  document.getElementById('instBar').classList.add('show');
+});
+document.getElementById('instBtn').addEventListener('click',async()=>{
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt(); await deferredPrompt.userChoice;
+  deferredPrompt=null; document.getElementById('instBar').classList.remove('show');
+});
+
+// ── Theme ─────────────────────────────────────────────────────────────────
+function applyTheme(){
+  document.documentElement.dataset.theme=prefs.dark?'dark':'';
+  document.getElementById('darkBtn').textContent=prefs.dark?'☀️':'🌙';
+  document.getElementById('tDark').classList.toggle('on',prefs.dark);
+  document.getElementById('theme-meta').content=prefs.dark?'#1c1f2b':'#667eea';
+}
+applyTheme();
+
+// ── Load ──────────────────────────────────────────────────────────────────
+async function loadNews(){
+  try{
+    const r=await fetch('economics_news.json?t='+Date.now());
+    const d=await r.json();
+    allNews=d.articles||[];
+    if(d.metadata?.last_updated){
+      const dt=new Date(d.metadata.last_updated);
+      document.getElementById('lu').textContent=
+        'Updated '+dt.toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    }
+    updateStats(); render();
+  }catch(e){
+    document.getElementById('newsList').innerHTML=
+      '<div class="empty"><div class="eicon">⚠️</div><div>Could not load news.<br><small>Pull down to retry.</small></div></div>';
+  }
+}
+
+function updateStats(){
+  document.getElementById('sTotal').textContent=allNews.length;
+  document.getElementById('sIndia').textContent=allNews.filter(n=>n.india_impact).length;
+  document.getElementById('sGlobal').textContent=allNews.filter(n=>n.global_impact).length;
+  document.getElementById('sHigh').textContent=allNews.filter(n=>(n.impact_score||0)>=8).length;
+}
+
+// ── Filter ────────────────────────────────────────────────────────────────
+function getFiltered(){
+  let list=allNews;
+  if(prefs.indiaOnly) list=list.filter(n=>n.india_impact);
+  if(prefs.highOnly)  list=list.filter(n=>(n.impact_score||0)>=8);
+  if(curFilter==='india')  list=list.filter(n=>n.india_impact);
+  else if(curFilter==='global') list=list.filter(n=>n.global_impact);
+  else if(curFilter==='high')   list=list.filter(n=>(n.impact_score||0)>=8);
+  else if(curFilter!=='all')
+    list=list.filter(n=>n.category?.toLowerCase().includes(curFilter)||
+      (n.tags||[]).some(t=>t.toLowerCase().includes(curFilter)));
+  if(curSearch){
+    const q=curSearch.toLowerCase();
+    list=list.filter(n=>n.title?.toLowerCase().includes(q)||
+      n.summary?.toLowerCase().includes(q)||n.source?.toLowerCase().includes(q));
+  }
+  return list;
+}
+
+// ── Card HTML ─────────────────────────────────────────────────────────────
+function cardHTML(a){
+  const sv=bookmarks.some(b=>b.title===a.title);
+  return`<div class="card" data-url="${a.url||'#'}">
+  <div class="badges">
+    ${a.india_impact?'<span class="badge bi">🇮🇳 India</span>':''}
+    ${a.global_impact?'<span class="badge bg2">🌍 Global</span>':''}
+    ${a.category?`<span class="badge bc">${a.category.replace(/_/g,' ')}</span>`:''}
+    ${(a.impact_score||0)>=8?'<span class="badge bh">⭐ High</span>':''}
+  </div>
+  <div class="ctitle">${a.title}</div>
+  <div class="csum">${a.summary||''}</div>
+  <div class="cmeta">
+    <span>📰 ${a.source||''}</span>
+    <span>📅 ${a.published_date?new Date(a.published_date).toLocaleDateString('en-IN',{day:'numeric',month:'short'}):''}</span>
+    ${a.impact_score?`<span class="ipill">Impact ${a.impact_score}/10</span>`:''}
+  </div>
+  <div class="cbtns">
+    <button class="cbtn bmbtn ${sv?'saved':''}" data-id="${a.title}">${sv?'🔖 Saved':'🔖 Save'}</button>
+    <button class="cbtn shbtn" data-title="${a.title.replace(/"/g,'')}" data-url="${a.url||''}">📤 Share</button>
+  </div>
+</div>`;
+}
+
+// ── Render ────────────────────────────────────────────────────────────────
+function render(){
+  if(curTab==='saved'){renderSaved();return;}
+  const list=getFiltered();
+  const el=document.getElementById('newsList');
+  if(!list.length){el.innerHTML='<div class="empty"><div class="eicon">📭</div><div>No articles match</div></div>';return;}
+  el.innerHTML=list.map(cardHTML).join('');
+  bindCards(el);
+}
+
+function bindCards(el){
+  el.querySelectorAll('.card').forEach(c=>{
+    c.addEventListener('click',e=>{
+      if(e.target.closest('.cbtn'))return;
+      const u=c.dataset.url;
+      if(u&&u!=='#')window.open(u,'_blank','noopener');
+    });
+  });
+  el.querySelectorAll('.bmbtn').forEach(b=>b.addEventListener('click',e=>{
+    e.stopPropagation(); toggleBM(b.dataset.id,b);
+  }));
+  el.querySelectorAll('.shbtn').forEach(b=>b.addEventListener('click',e=>{
+    e.stopPropagation(); doShare(b.dataset.title,b.dataset.url);
+  }));
+}
+
+// ── Bookmarks ─────────────────────────────────────────────────────────────
+function toggleBM(id,btn){
+  const a=allNews.find(n=>n.title===id);
+  if(!a)return;
+  const i=bookmarks.findIndex(b=>b.title===id);
+  if(i===-1){bookmarks.push(a);btn.textContent='🔖 Saved';btn.classList.add('saved');toast('Saved!');}
+  else{bookmarks.splice(i,1);btn.textContent='🔖 Save';btn.classList.remove('saved');toast('Removed');}
+  try{localStorage.setItem('ecn_bm',JSON.stringify(bookmarks));}catch(e){}
+  if(curTab==='saved')renderSaved();
+}
+
+function renderSaved(){
+  const el=document.getElementById('savedList');
+  if(!bookmarks.length){
+    el.innerHTML='<div class="empty"><div class="eicon">🔖</div><div>No saved articles<br><small>Tap 🔖 on any article</small></div></div>';return;
+  }
+  el.innerHTML=bookmarks.map(cardHTML).join('');
+  bindCards(el);
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────────
+function switchTab(t){
+  curTab=t;
+  document.querySelectorAll('.tabs').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(x=>x.classList.remove('active'));
+  if(t==='news'){
+    document.getElementById('tabNews').classList.add('active');
+    document.getElementById('navNews').classList.add('active');
+    render();
+  } else {
+    document.getElementById('tabSaved').classList.add('active');
+    document.getElementById('navSaved').classList.add('active');
+    renderSaved();
+  }
+}
+
+document.getElementById('navNews').addEventListener('click',()=>switchTab('news'));
+document.getElementById('navSaved').addEventListener('click',()=>switchTab('saved'));
+document.getElementById('navRefresh').addEventListener('click',()=>{if(navigator.vibrate)navigator.vibrate(10);toast('Refreshing…');loadNews();});
+document.getElementById('navShare').addEventListener('click',()=>openSheet('shareSheet'));
+
+// ── Filters ───────────────────────────────────────────────────────────────
+document.getElementById('filters').addEventListener('click',e=>{
+  const b=e.target.closest('.fb'); if(!b)return;
+  document.querySelectorAll('.fb').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); curFilter=b.dataset.f;
+  if(navigator.vibrate)navigator.vibrate(8); render();
+});
+
+// ── Search ────────────────────────────────────────────────────────────────
+document.getElementById('sInput').addEventListener('input',e=>{
+  curSearch=e.target.value.trim();
+  document.getElementById('sClear').style.display=curSearch?'block':'none';
+  render();
+});
+document.getElementById('sClear').addEventListener('click',()=>{
+  document.getElementById('sInput').value=''; curSearch='';
+  document.getElementById('sClear').style.display='none'; render();
+});
+
+// ── Share ─────────────────────────────────────────────────────────────────
+async function doShare(title,url){
+  if(navigator.share){try{await navigator.share({title,url});return;}catch(_){}}
+  openSheet('shareSheet');
+}
+document.getElementById('sNative').addEventListener('click',async()=>{
+  closeSheet();
+  if(navigator.share)try{await navigator.share({title:'EconNews',url:location.href});}catch(_){}
+});
+document.getElementById('sWA').addEventListener('click',()=>{
+  closeSheet();
+  window.open(`https://wa.me/?text=Check out EconNews: ${encodeURIComponent(location.href)}`,'_blank');
+});
+document.getElementById('sEmail').addEventListener('click',()=>{
+  closeSheet();
+  window.open(`mailto:?subject=EconNews - Economics News&body=${location.href}`);
+});
+document.getElementById('sCopy').addEventListener('click',()=>{
+  closeSheet();
+  navigator.clipboard?.writeText(location.href).then(()=>toast('Link copied!'));
+});
+document.getElementById('sClose').addEventListener('click',closeSheet);
+
+// ── Settings ──────────────────────────────────────────────────────────────
+document.getElementById('settBtn').addEventListener('click',()=>{syncToggles();openSheet('settSheet');});
+document.getElementById('darkBtn').addEventListener('click',()=>{prefs.dark=!prefs.dark;savePr();applyTheme();});
+
+function syncToggles(){
+  ['Dark','Notif','India','High'].forEach(k=>{
+    const key=k==='Dark'?'dark':k==='Notif'?'notif':k==='India'?'indiaOnly':'highOnly';
+    document.getElementById('t'+k).classList.toggle('on',prefs[key]);
+  });
+}
+
+document.getElementById('tDark').addEventListener('click',()=>{prefs.dark=!prefs.dark;savePr();applyTheme();});
+document.getElementById('tNotif').addEventListener('click',async()=>{
+  if(!prefs.notif){const p=await Notification.requestPermission();prefs.notif=p==='granted';}
+  else prefs.notif=false;
+  savePr();syncToggles();toast(prefs.notif?'Notifications on':'Notifications off');
+});
+document.getElementById('tIndia').addEventListener('click',()=>{prefs.indiaOnly=!prefs.indiaOnly;savePr();syncToggles();render();toast(prefs.indiaOnly?'India only':'All regions');});
+document.getElementById('tHigh').addEventListener('click',()=>{prefs.highOnly=!prefs.highOnly;savePr();syncToggles();render();toast(prefs.highOnly?'High impact only':'All articles');});
+document.getElementById('clearCache').addEventListener('click',async()=>{
+  closeSheet();
+  if('caches' in window){const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)));}
+  toast('Cache cleared — reloading…'); setTimeout(()=>location.reload(true),1300);
+});
+
+function savePr(){try{localStorage.setItem('ecn_pr',JSON.stringify(prefs));}catch(e){}}
+
+// ── Sheet ──────────────────────────────────────────────────────────────────
+function openSheet(id){document.getElementById('bdrop').classList.add('show');document.getElementById(id).classList.add('show');}
+function closeSheet(){document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('show'));document.getElementById('bdrop').classList.remove('show');}
+document.getElementById('bdrop').addEventListener('click',closeSheet);
+
+// ── Pull to refresh ────────────────────────────────────────────────────────
+document.addEventListener('touchstart',e=>{if(window.scrollY===0)touchY0=e.touches[0].clientY;},{passive:true});
+document.addEventListener('touchmove',e=>{
+  if(window.scrollY===0){const dy=e.touches[0].clientY-touchY0;
+    if(dy>70){document.getElementById('ptr').classList.add('show');pulling=true;}
+    else{document.getElementById('ptr').classList.remove('show');pulling=false;}}
+},{passive:true});
+document.addEventListener('touchend',()=>{
+  if(pulling){loadNews();if(navigator.vibrate)navigator.vibrate(10);}
+  document.getElementById('ptr').classList.remove('show');pulling=false;
+});
+
+// ── Toast ──────────────────────────────────────────────────────────────────
+function toast(msg){
+  const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastTm);toastTm=setTimeout(()=>el.classList.remove('show'),2200);
+}
+
+// ── Offline ────────────────────────────────────────────────────────────────
+window.addEventListener('online',()=>{document.getElementById('offBar').classList.remove('show');loadNews();});
+window.addEventListener('offline',()=>document.getElementById('offBar').classList.add('show'));
+if(!navigator.onLine)document.getElementById('offBar').classList.add('show');
+
+// ── Init ──────────────────────────────────────────────────────────────────
+loadNews();
+</script>
+</body>
+</html>
