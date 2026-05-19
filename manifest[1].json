@@ -1,0 +1,46 @@
+{
+  "name": "Economics News - India & Global",
+  "short_name": "EconNews",
+  "description": "Track India and global economics news with smart filters and impact scoring",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#667eea",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect fill='%23667eea' width='512' height='512' rx='115'/%3E%3Ctext x='256' y='350' font-size='280' text-anchor='middle' fill='white' font-family='Arial, sans-serif'%3E📊%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect fill='%23667eea' width='192' height='192' rx='40'/%3E%3Ctext x='96' y='135' font-size='100' text-anchor='middle' fill='white' font-family='Arial, sans-serif'%3E📊%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": [
+    "news",
+    "finance",
+    "business"
+  ],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'%3E%3Crect fill='%23f8f9fa' width='540' height='720'/%3E%3Crect fill='%23667eea' width='540' height='120'/%3E%3Ctext x='270' y='75' font-size='28' text-anchor='middle' fill='white' font-weight='bold'%3EEconomics News%3C/text%3E%3Crect fill='white' x='20' y='140' width='500' height='100' rx='10'/%3E%3Ctext x='40' y='175' font-size='16' font-weight='bold'%3EIndia's GDP Growth at 7.6%25%3C/text%3E%3Ctext x='40' y='210' font-size='12' fill='%23666'%3EFastest growing major economy...%3C/text%3E%3C/svg%3E",
+      "sizes": "540x720",
+      "type": "image/svg+xml"
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}
