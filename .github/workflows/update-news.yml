@@ -1,0 +1,49 @@
+name: Daily Economics News Update
+
+on:
+  schedule:
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests feedparser beautifulsoup4 --quiet
+
+      - name: Fetch latest economics news
+        run: python fetch_news.py
+
+      - name: Validate JSON
+        run: python -m json.tool economics_news.json > /dev/null && echo "JSON valid"
+
+      - name: Commit updated news
+        run: |
+          git config user.name  "EconNews Bot"
+          git config user.email "bot@econnews.app"
+          git add economics_news.json
+          git diff --staged --quiet || git commit -m "Auto update $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git push
+
+      - name: Trigger Netlify redeploy
+        env:
+          NETLIFY_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
+        run: |
+          if [ -n "$NETLIFY_HOOK" ]; then
+            curl -s -X POST "$NETLIFY_HOOK"
+            echo "Netlify deploy triggered"
+          else
+            echo "Netlify will auto-deploy via git"
+          fi
